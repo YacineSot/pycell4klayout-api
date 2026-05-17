@@ -45,7 +45,9 @@ class Polygon(Shape):
         self.__internalInit(arg3)
 
     def __internalInit(self, layer: Layer):
-        super().__init__(layer, self._polygon.bbox())
+        conv_box = Box(0,0,0,0)
+        conv_box.box = self._polygon.bbox()
+        super().__init__(layer, conv_box)
         self.set_shape(Shape.getCell().shapes(layer.number).insert(self._polygon))
 
     def addToRegion(self, region: pya.Region, filter: ShapeFilter):
