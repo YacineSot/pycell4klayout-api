@@ -16,12 +16,16 @@
 #
 ########################################################################
 
+from typing import List
+
 from cni.rect import *
 from cni.grouping import *
 from cni.pin import *
 from cni.term import *
 
 import pya
+
+import os
 
 class Dlo(object):
 
@@ -177,7 +181,7 @@ class DloGen(Dlo):
             raise Exception("Library name not set!")
         return cls._libName
 
-    def getShapes(self) -> list[Shape]:
+    def getShapes(self) -> List[Shape]:
         cellContext = self._getCurrentCellContext()
         shapes = []
         [shapes.append(shape) for shape in cellContext.shapes]
