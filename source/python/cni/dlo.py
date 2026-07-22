@@ -55,6 +55,13 @@ class ChoiceConstraint(list):
     def __init__(self, choices, action = REJECT):
         super().__init__(choices)
 
+class BooleanConstraint:
+    def __init__(self, action = REJECT):
+        self.action = action
+
+class ReadOnlyConstraint:  
+    def __init__(self, action = REJECT):
+        self.action = action
 
 class RangeConstraint:
 
@@ -175,8 +182,14 @@ class PCellWrapper(pya.PCellDeclaration):
         else:
             print(f"Invalid parameter type for parameter {name} (value is {repr(value)})")
             assert(False)
-
+        readonly = False
+        if type(constraint) is BooleanConstraint:
+            value_type = pya.PCellParameterDeclaration.TypeBoolean
+        elif type(constraint) is ReadOnlyConstraint:
+            value_type = pya.PCellParameterDeclaration.TypeString
+            readonly = True
         param_decl = pya.PCellParameterDeclaration(name, value_type, description, value)
+        param_decl.readonly = readonly
 
         if type(constraint) is ChoiceConstraint:
             for v in constraint:
