@@ -212,24 +212,27 @@ class PCellWrapper(pya.PCellDeclaration):
         elif type(constraint) is ReadOnlyConstraint:
             value_type = pya.PCellParameterDeclaration.TypeString
             readonly = True
-        param_decl = pya.PCellParameterDeclaration(name, value_type, description, value)
-        param_decl.readonly = readonly
+        paramDecl = pya.PCellParameterDeclaration(name, value_type, description, value)
+        paramDecl.readonly = readonly
 
         if type(constraint) is ChoiceConstraint:
             for v in constraint:
-                param_decl.add_choice(repr(v), v)
+                paramDecl.add_choice(repr(v), v)
         elif type(constraint) is RangeConstraint:
             if constraint.action is REJECT:
                 if constraint.low is not None:
-                    param_decl.min_value = constraint.low
+                    paramDecl.min_value = constraint.low
                 if constraint.high is not None:
-                    param_decl.max_value = constraint.high
+                    paramDecl.max_value = constraint.high
 
-        self._paramDecls.append(param_decl)
+        self._paramDecls.append(paramDecl)
 
     @staticmethod
     def _initializeCallbacks():
-        callbacksDefPath = os.path.join(PCellWrapper._callBackPath, "callbacks.json")
+        ## TO FIX
+        callBackPath = PCellWrapper._callBackPath if PCellWrapper._callBackPath else ""
+        ##
+        callbacksDefPath = os.path.join(callBackPath, "callbacks.json")
 
         if os.path.exists(callbacksDefPath):
             try:
