@@ -61,10 +61,6 @@ class ChoiceConstraint(list):
     def __init__(self, choices, action = REJECT):
         super().__init__(choices)
 
-class BooleanConstraint:
-    def __init__(self, action = REJECT):
-        self.action = action
-
 class ReadOnlyConstraint:  
     def __init__(self, action = REJECT):
         self.action = action
@@ -194,24 +190,21 @@ class PCellWrapper(pya.PCellDeclaration):
     def __call__(self, name, value, description = None, constraint = None):
         # NOTE: this is calles from inside defineParamSpecs as we
         # supply the "specs" object through self.
-
-        if type(value) is float:
+        readonly = False
+        if type(constraint) is ReadOnlyConstraint:
+            readonly = True
+        if type(value) is bool:
+            value_type = pya.PCellParameterDeclaration.TypeBoolean
+        elif type(value) is float:
             value_type = pya.PCellParameterDeclaration.TypeDouble
         elif type(value) is int:
             value_type = pya.PCellParameterDeclaration.TypeInt
         elif type(value) is str:
             value_type = pya.PCellParameterDeclaration.TypeString
-        elif type(value) is bool:
-            value_type = pya.PCellParameterDeclaration.TypeBoolean
+            
         else:
             print(f"Invalid parameter type for parameter {name} (value is {repr(value)})")
             assert(False)
-        readonly = False
-        if type(constraint) is BooleanConstraint:
-            value_type = pya.PCellParameterDeclaration.TypeBoolean
-        elif type(constraint) is ReadOnlyConstraint:
-            value_type = pya.PCellParameterDeclaration.TypeString
-            readonly = True
         paramDecl = pya.PCellParameterDeclaration(name, value_type, description, value)
         paramDecl.readonly = readonly
 
@@ -373,8 +366,9 @@ class PCellWrapper(pya.PCellDeclaration):
             isValue = False
             parameterValues.clear();
             idx = 0
+            param_list_count = len(PCellWrapper._parameterTypeList)
             for value in coercedParameters:
-                if isValue:
+                if isValue and idx < param_list_count:
                     valueType = type(value)
                     if value == chr(0x2717):
                         value = ''
