@@ -187,7 +187,7 @@ class PCellWrapper(pya.PCellDeclaration):
             self._printTraceBack()
             exit(1)
 
-    def __call__(self, name, value, description = None, constraint = None):
+    def __call__(self, name, value, description = None, constraint = None, unit = None):
         # NOTE: this is calles from inside defineParamSpecs as we
         # supply the "specs" object through self.
         readonly = False
@@ -205,7 +205,7 @@ class PCellWrapper(pya.PCellDeclaration):
         else:
             print(f"Invalid parameter type for parameter {name} (value is {repr(value)})")
             assert(False)
-        paramDecl = pya.PCellParameterDeclaration(name, value_type, description, value)
+        paramDecl = pya.PCellParameterDeclaration(name, value_type, description, value, unit)
         paramDecl.readonly = readonly
 
         if type(constraint) is ChoiceConstraint:
@@ -366,9 +366,8 @@ class PCellWrapper(pya.PCellDeclaration):
             isValue = False
             parameterValues.clear();
             idx = 0
-            param_list_count = len(PCellWrapper._parameterTypeList)
             for value in coercedParameters:
-                if isValue and idx < param_list_count:
+                if isValue:
                     valueType = type(value)
                     if value == chr(0x2717):
                         value = ''
@@ -384,7 +383,7 @@ class PCellWrapper(pya.PCellDeclaration):
                     elif PCellWrapper._parameterTypeList[idx] == PCellWrapper._strType:
                         value = str(value)
                     elif PCellWrapper._parameterTypeList[idx] == PCellWrapper._boolType:
-                        value = bool(value)
+                        value = value.lower() == 'true' or value == '1'
 
                     parameterValues.append(value)
                     idx = idx + 1
